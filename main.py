@@ -3,7 +3,35 @@
 import sys
 from PySide2.QtWidgets import *
 from PySide2.QtGui import *
-from PySide2.QtCore import Slot, Qt, QSize
+from PySide2.QtCore import *
+from flask import Flask, json, request
+
+class RemoteInterface(QThread):
+
+    show_img = Signal(bytes)
+
+    def __init__(self):
+        QThread.__init__(self)
+
+    def run(self):
+        app = Flask("ImageDisplay")
+        app.use_reloader = False
+        app.debug = False
+
+        @app.route('/status')
+        def status():
+            print("returning status")
+            return "hallo welt"
+
+        @app.route('/show', methods=['PUT', 'POST'])
+        def show():
+            self.show_img.emit(request.data)
+            #print("data:", request.data)
+            #with open('tmp.jpg', 'wb') as f:
+                #f.write(request.stream.read())
+            return "OK"
+
+        app.run(host = '0.0.0.0')
 
 # based on https://stackoverflow.com/a/22618496
 class ImageWidget(QLabel):
@@ -43,6 +71,16 @@ class ImageViewer(QMainWindow):
         # Connecting the signal
         #self.button.clicked.connect(self.magic)
 
+    @Slot(bytes)
+    def showRawData(self, data):
+        print("got", len(data), "bytes")
+        if not data:
+            return
+
+        img = QPixmap()
+        if img.loadFromData(data, "JPEG"):
+            self.image.setPixmap(img)
+
     def loadImage(self, filename):
         reader = QImageReader(filename)
         reader.setAutoTransform(True)
@@ -57,8 +95,13 @@ class ImageViewer(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
-    widget = ImageViewer()
-    widget.showFullScreen()
-    #widget.show()
+    viewer = ImageViewer()
+    viewer.showFullScreen()
+    #viewer.show()
 
+    api = RemoteInterface()
+
+    api.show_img.connect(viewer.showRawData)
+
+    api.start()
     sys.exit(app.exec_())
