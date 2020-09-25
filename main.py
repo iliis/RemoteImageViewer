@@ -21,8 +21,7 @@ class RemoteInterface(QThread):
 
         @app.route('/status')
         def status():
-            print("returning status")
-            return "hallo welt"
+            return "OK"
 
         @app.route('/show', methods=['PUT', 'POST'])
         def show():
