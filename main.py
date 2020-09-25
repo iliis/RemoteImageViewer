@@ -5,6 +5,7 @@ from PySide2.QtWidgets import *
 from PySide2.QtGui import *
 from PySide2.QtCore import *
 from flask import Flask, json, request
+from base64 import b64decode
 
 class RemoteInterface(QThread):
 
@@ -25,10 +26,17 @@ class RemoteInterface(QThread):
 
         @app.route('/show', methods=['PUT', 'POST'])
         def show():
-            self.show_img.emit(request.data)
-            #print("data:", request.data)
-            #with open('tmp.jpg', 'wb') as f:
-                #f.write(request.stream.read())
+            if request.method == 'PUT':
+                print("request (PUT):", len(request.data), "bytes")
+                self.show_img.emit(request.data)
+                #print("data:", request.data)
+                #with open('tmp.jpg', 'wb') as f:
+                    #f.write(request.stream.read())
+            else:
+                if 'image' in request.form:
+                    print("request (POST):", len(request.form['image']), "bytes")
+                    print("type:", type(request.form['image']))
+                    self.show_img.emit(b64decode(request.form['image']))
             return "OK"
 
         app.run(host = '0.0.0.0')
@@ -73,13 +81,17 @@ class ImageViewer(QMainWindow):
 
     @Slot(bytes)
     def showRawData(self, data):
-        print("got", len(data), "bytes")
         if not data:
+            print("no data received :(")
             return
+        else:
+            print("got", len(data), "bytes")
 
         img = QPixmap()
-        if img.loadFromData(data, "JPEG"):
+        if img.loadFromData(data):
             self.image.setPixmap(img)
+        else:
+            print("failed to parse image data")
 
     def loadImage(self, filename):
         reader = QImageReader(filename)
