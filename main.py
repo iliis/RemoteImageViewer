@@ -2,6 +2,7 @@
 
 import sys
 import signal
+import subprocess
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
@@ -41,6 +42,10 @@ class RemoteInterface(QThread):
                     self.show_img.emit(b64decode(request.form['image']))
             return "OK"
 
+        @app.route('/wake')
+        def wake():
+            subprocess.check_call(["xdotool", "key", "Up"])
+
         app.run(host = '0.0.0.0')
 
 # based on https://stackoverflow.com/a/22618496
@@ -72,7 +77,7 @@ class ImageViewer(QMainWindow):
         QMainWindow.__init__(self)
 
         self.image = ImageWidget()
-        self.loadImage("testimg.jpg")
+        self.loadImage("houdini.png")
 
         self.setCentralWidget(self.image)
 

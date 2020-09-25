@@ -9,11 +9,11 @@ Used in Houdinis Quest Adventure Game's
 
 Fedora:
 
-    sudo dnf install python3-flask pyqt5\*
+    sudo dnf install python3-flask pyqt5\* xdotool
 
 Raspbian:
 
-    sudo apt install python3-flask pyqt5\*
+    sudo apt install python3-flask pyqt5\* xdotool
 
 Then run it with
 
