@@ -1,15 +1,21 @@
 #!/usr/bin/env python3
 
 import sys
-from PySide2.QtWidgets import *
-from PySide2.QtGui import *
-from PySide2.QtCore import *
+
+
+#from PySide2.QtWidgets import *
+#from PySide2.QtGui import *
+#from PySide2.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
+
 from flask import Flask, json, request
 from base64 import b64decode
 
 class RemoteInterface(QThread):
 
-    show_img = Signal(bytes)
+    show_img = pyqtSignal(bytes)
 
     def __init__(self):
         QThread.__init__(self)
@@ -75,10 +81,7 @@ class ImageViewer(QMainWindow):
 
         self.setStyleSheet("background: black")
 
-        # Connecting the signal
-        #self.button.clicked.connect(self.magic)
-
-    @Slot(bytes)
+    @pyqtSlot(bytes)
     def showRawData(self, data):
         if not data:
             print("no data received :(")
@@ -98,10 +101,6 @@ class ImageViewer(QMainWindow):
         new_img = reader.read()
         if new_img:
             self.image.setPixmap(QPixmap.fromImage(new_img))
-
-    @Slot()
-    def magic(self):
-        self.image.setText("foo bar")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
