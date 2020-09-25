@@ -12,7 +12,7 @@ StandardError=inherit
 Restart=always
 RestartSec=1
 StartLimitBurst=99
-RuntimeMaxSec=600
+RuntimeMaxSec=604800
 User=pi
 
 [Install]
