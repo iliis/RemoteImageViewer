@@ -5,7 +5,8 @@ After=network.target network-online.target rc-local.service
 [Service]
 ExecStart=/home/pi/RemoteImageViewer/main.py
 Environment=DISPLAY=:0.0
-RuntimeDirectory=/home/pi/RemoteImageViewer/
+User=pi
+WorkingDirectory=/home/pi/RemoteImageViewer/
 StandardOutput=inherit
 StandardError=inherit
 Restart=always
