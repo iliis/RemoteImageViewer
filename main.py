@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
 
 import sys
+import signal
 
-
-#from PySide2.QtWidgets import *
-#from PySide2.QtGui import *
-#from PySide2.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
@@ -103,6 +100,9 @@ class ImageViewer(QMainWindow):
             self.image.setPixmap(QPixmap.fromImage(new_img))
 
 if __name__ == "__main__":
+    # without this Qt eats CTRL-C
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+
     app = QApplication(sys.argv)
 
     viewer = ImageViewer()
