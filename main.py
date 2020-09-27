@@ -75,6 +75,8 @@ class ImageWidget(QLabel):
 class ImageViewer(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
+        
+        self.setCursor(Qt.BlankCursor) 
 
         self.image = ImageWidget()
         self.loadImage("houdini.png")
